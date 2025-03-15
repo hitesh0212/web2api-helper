@@ -152,12 +152,19 @@ curl -X GET "https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}" \\
           api_endpoint: apiData.apiEndpoint,
           status: apiData.status,
           error: apiData.error,
-          user_id: session.user.id // Include the user_id from the session
+          user_id: session.user.id
         })
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error when saving to history:', error);
+        throw error;
+      }
+      
+      if (!data) {
+        throw new Error("No data returned from save operation");
+      }
       
       const historyItem: ApiHistory = {
         id: data.id,

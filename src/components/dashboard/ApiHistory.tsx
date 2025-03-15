@@ -6,6 +6,7 @@ import { ApiHistory as ApiHistoryType, apiService } from "@/services/apiService"
 import { Clock, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
 
 export const ApiHistory = () => {
   const [history, setHistory] = useState<ApiHistoryType[]>([]);
@@ -24,7 +25,7 @@ export const ApiHistory = () => {
       const data = await apiService.getHistory();
       setHistory(data);
     } catch (error) {
-      console.error(error);
+      console.error("Error loading history:", error);
     } finally {
       setIsLoading(false);
     }
@@ -35,24 +36,24 @@ export const ApiHistory = () => {
       await apiService.deleteFromHistory(id);
       setHistory(history.filter(item => item.id !== id));
     } catch (error) {
-      console.error(error);
+      console.error("Error deleting history item:", error);
     }
   };
 
   return (
-    <Card className="shadow-lg border-0 overflow-hidden">
-      <CardHeader className="bg-primary/5 border-b border-border">
-        <CardTitle className="text-xl flex items-center">
+    <Card className="shadow-lg border-0 overflow-hidden bg-white/90 dark:bg-black/60 backdrop-blur-md border border-purple-100 dark:border-purple-900/30 h-full">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-b border-purple-100 dark:border-purple-900/30">
+        <CardTitle className="text-xl flex items-center bg-gradient-to-r from-purple-700 to-violet-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-violet-300">
           <Clock className="h-5 w-5 mr-2" />
           API History
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="p-0 max-h-[calc(100vh-16rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-200 dark:scrollbar-thumb-purple-900 scrollbar-track-transparent">
         {isLoading ? (
           <div className="p-6 space-y-4">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-16 w-full bg-purple-100/50 dark:bg-purple-900/20" />
+            <Skeleton className="h-16 w-full bg-purple-100/50 dark:bg-purple-900/20" />
+            <Skeleton className="h-16 w-full bg-purple-100/50 dark:bg-purple-900/20" />
           </div>
         ) : history.length === 0 ? (
           <div className="flex items-center justify-center h-48 text-muted-foreground flex-col">
@@ -61,9 +62,15 @@ export const ApiHistory = () => {
             <p className="text-sm">Generated APIs will appear here</p>
           </div>
         ) : (
-          <div className="divide-y divide-border">
-            {history.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+          <div className="divide-y divide-purple-100 dark:divide-purple-900/30">
+            {history.map((item, index) => (
+              <motion.div 
+                key={item.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="flex items-center justify-between p-4 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-colors"
+              >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{item.url}</p>
                   <div className="flex items-center gap-2 mt-1">
@@ -82,7 +89,12 @@ export const ApiHistory = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    asChild
+                    className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-100/50 dark:hover:bg-purple-900/30"
+                  >
                     <a href={item.apiEndpoint} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4" />
                     </a>
@@ -91,12 +103,12 @@ export const ApiHistory = () => {
                     variant="ghost" 
                     size="icon" 
                     onClick={() => handleDelete(item.id)}
-                    className="text-muted-foreground hover:text-destructive"
+                    className="text-muted-foreground hover:text-red-500 dark:hover:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-900/30"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

@@ -14,28 +14,28 @@ export const ThemeToggle = () => {
     
     const button = buttonRef.current;
     const buttonRect = button.getBoundingClientRect();
-    const particleCount = 20;
+    const particleCount = 30;
     
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       
       // Use appropriate color based on theme
       const particleColor = isDarkMode ? 
-        `rgb(${255}, ${255}, ${Math.floor(Math.random() * 100) + 155})` : 
-        `rgb(${Math.floor(Math.random() * 100) + 100}, ${50}, ${255})`;
+        `hsl(${Math.floor(Math.random() * 40) + 260}, 100%, ${Math.floor(Math.random() * 20) + 70}%)` : 
+        `hsl(${Math.floor(Math.random() * 40) + 260}, 100%, ${Math.floor(Math.random() * 20) + 50}%)`;
       
       particle.style.position = 'fixed';
       particle.style.borderRadius = '50%';
-      particle.style.width = `${Math.random() * 10 + 3}px`;
+      particle.style.width = `${Math.random() * 8 + 2}px`;
       particle.style.height = particle.style.width;
       particle.style.backgroundColor = particleColor;
-      particle.style.boxShadow = `0 0 ${Math.random() * 10 + 5}px ${particleColor}`;
+      particle.style.boxShadow = `0 0 ${Math.random() * 8 + 3}px ${particleColor}`;
       particle.style.top = `${buttonRect.top + buttonRect.height / 2}px`;
       particle.style.left = `${buttonRect.left + buttonRect.width / 2}px`;
       particle.style.pointerEvents = 'none';
       particle.style.zIndex = '9999';
       particle.style.opacity = '1';
-      particle.style.transition = 'all 1s ease-out';
+      particle.style.transition = 'all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)';
       
       document.body.appendChild(particle);
       
@@ -56,7 +56,7 @@ export const ThemeToggle = () => {
         if (document.body.contains(particle)) {
           document.body.removeChild(particle);
         }
-      }, 1000);
+      }, 800);
     }
   };
   
@@ -65,81 +65,25 @@ export const ThemeToggle = () => {
     toggleTheme();
   };
   
-  // Add stars animation in dark mode
-  useEffect(() => {
-    if (!isDarkMode) return;
-    
-    // Only add stars if they don't already exist
-    const existingStars = document.getElementById('stars-container');
-    if (existingStars) return;
-    
-    const starsContainer = document.createElement('div');
-    starsContainer.id = 'stars-container';
-    starsContainer.style.position = 'fixed';
-    starsContainer.style.top = '0';
-    starsContainer.style.left = '0';
-    starsContainer.style.width = '100%';
-    starsContainer.style.height = '100%';
-    starsContainer.style.pointerEvents = 'none';
-    starsContainer.style.zIndex = '-1';
-    document.body.appendChild(starsContainer);
-    
-    // Create stars
-    const starCount = 50;
-    for (let i = 0; i < starCount; i++) {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      star.style.position = 'absolute';
-      star.style.width = `${Math.random() * 2 + 1}px`;
-      star.style.height = star.style.width;
-      star.style.backgroundColor = 'white';
-      star.style.borderRadius = '50%';
-      star.style.top = `${Math.random() * 100}%`;
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.boxShadow = '0 0 10px white';
-      star.style.opacity = `${Math.random() * 0.5 + 0.3}`;
-      star.style.animation = `twinkle ${Math.random() * 5 + 3}s infinite alternate`;
-      starsContainer.appendChild(star);
-    }
-    
-    // Add twinkle animation if it doesn't exist
-    if (!document.getElementById('star-animation')) {
-      const style = document.createElement('style');
-      style.id = 'star-animation';
-      style.innerHTML = `
-        @keyframes twinkle {
-          0% { opacity: 0.3; }
-          100% { opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-    
-    return () => {
-      // Clean up stars when component unmounts or theme changes
-      if (document.body.contains(starsContainer)) {
-        document.body.removeChild(starsContainer);
-      }
-    };
-  }, [isDarkMode]);
-
   return (
     <Button
       ref={buttonRef}
       variant="ghost"
       size="icon"
       onClick={handleToggle}
-      className="rounded-full w-9 h-9 transition-all duration-300 hover:scale-110 hover:bg-primary/20"
+      className="relative rounded-full w-10 h-10 transition-all duration-300 hover:scale-110 overflow-hidden group"
       aria-label="Toggle theme"
     >
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
       {isDarkMode ? (
         <div className="relative">
-          <Moon className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all duration-500 dark:rotate-0 dark:scale-100" />
-          <Stars className="h-[0.6rem] w-[0.6rem] absolute -top-1 -right-1 text-purple-300 animate-pulse opacity-80" />
+          <Moon className="h-5 w-5 rotate-0 scale-100 transition-all duration-500 text-purple-300" />
+          <Stars className="h-3 w-3 absolute -top-1 -right-1 text-purple-300 animate-pulse opacity-80" />
         </div>
       ) : (
-        <Sun className="h-[1.1rem] w-[1.1rem] rotate-0 scale-100 transition-all duration-500 animate-spin-slow" />
+        <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-500 text-yellow-500 animate-spin-slow" />
       )}
+      <span className="absolute inset-0 rounded-full border border-purple-300/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
     </Button>
   );
 };

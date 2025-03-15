@@ -84,15 +84,45 @@
 
 @layer utilities {
   .glass-effect {
-    @apply backdrop-blur-lg bg-white/30 dark:bg-black/30 border border-white/20 dark:border-white/10 shadow-glass;
+    @apply backdrop-blur-lg bg-white/50 dark:bg-black/50 border border-white/20 dark:border-white/10 shadow-glass;
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-violet-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-violet-500;
   }
 
   .text-gradient-purple {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-400;
+  }
+  
+  /* Scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme('colors.purple.200');
+    border-radius: 4px;
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme('colors.purple.900');
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.purple.300');
+  }
+  
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.purple.800');
   }
   
   /* Animation utilities */
@@ -161,6 +191,20 @@
   @keyframes slide-in-right {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
+  }
+  
+  /* Shine animation for buttons */
+  @keyframes shine {
+    from {
+      left: -100%;
+    }
+    to {
+      left: 100%;
+    }
+  }
+  
+  .animate-shine {
+    animation: shine 1.5s linear infinite;
   }
 }
 
