@@ -49,6 +49,13 @@ export const ApiForm = ({ onApiGenerated }: ApiFormProps) => {
       const response = await apiService.generateApi(url);
       
       if (response.success) {
+        // Toast notification for successful API generation
+        toast({
+          title: "API Generated",
+          description: "Your API has been successfully generated",
+          variant: "default",
+        });
+        
         // Save to history before notifying parent component
         try {
           await apiService.saveToHistory({

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -23,117 +22,37 @@ export interface ApiResponse {
 // Service that connects to Supabase and our Python Flask backend
 export const apiService = {
   generateApi: async (url: string): Promise<ApiResponse> => {
-    // In a real app, this would call our Flask backend
-    return new Promise((resolve) => {
-      // Simulate API call delay
-      setTimeout(() => {
-        // Simulate success response
-        const mockResponse: ApiResponse = {
-          success: true,
-          data: {
-            title: "Example Website",
-            description: "This is a sample website with various content",
-            meta: {
-              author: "John Doe",
-              keywords: ["web", "api", "generator"],
-            },
-            content: {
-              sections: [
-                {
-                  heading: "Welcome to our site",
-                  paragraphs: [
-                    "This is the first paragraph of content.",
-                    "This is another paragraph with important information.",
-                  ],
-                },
-                {
-                  heading: "Features",
-                  items: [
-                    "Feature 1: Amazing functionality",
-                    "Feature 2: Incredible performance",
-                    "Feature 3: Outstanding design",
-                  ],
-                },
-              ],
-              footer: {
-                copyright: "© 2023 Example",
-                links: [
-                  { text: "Privacy", url: "/privacy" },
-                  { text: "Terms", url: "/terms" },
-                ],
-              },
-            },
-          },
-          documentation: `
-## API Documentation
-
-### Base URL
-\`https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}\`
-
-### Authentication
-All API requests require the use of an API key.
-
-### Endpoints
-
-#### GET /
-Returns the full structured content of the website.
-
-#### GET /meta
-Returns only the metadata of the website.
-
-#### GET /content
-Returns only the content sections of the website.
-
-### Example Request
-\`\`\`
-curl -X GET "https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}" \\
-  -H "Authorization: Bearer YOUR_API_KEY"
-\`\`\`
-
-### Example Response
-\`\`\`json
-{
-  "title": "Example Website",
-  "description": "This is a sample website with various content",
-  "meta": {
-    "author": "John Doe",
-    "keywords": ["web", "api", "generator"]
-  },
-  "content": {
-    "sections": [
-      {
-        "heading": "Welcome to our site",
-        "paragraphs": [
-          "This is the first paragraph of content.",
-          "This is another paragraph with important information."
-        ]
-      },
-      {
-        "heading": "Features",
-        "items": [
-          "Feature 1: Amazing functionality",
-          "Feature 2: Incredible performance",
-          "Feature 3: Outstanding design"
-        ]
+    try {
+      const backendUrl = "https://web2api-1.onrender.com";
+      
+      const response = await fetch(`${backendUrl}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    ],
-    "footer": {
-      "copyright": "© 2023 Example",
-      "links": [
-        { "text": "Privacy", "url": "/privacy" },
-        { "text": "Terms", "url": "/terms" }
-      ]
+      
+      const data = await response.json();
+      
+      // Transform the backend response to match our expected format
+      return {
+        success: data.success,
+        documentation: data.documentation || "",
+        apiEndpoint: data.api || "",
+        error: data.success ? undefined : "Failed to generate API",
+      };
+    } catch (error) {
+      console.error("Error calling backend API:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "An unexpected error occurred",
+      };
     }
-  }
-}
-\`\`\`
-          `,
-          apiEndpoint: `https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}`,
-        };
-        
-        resolve(mockResponse);
-      }, 3000); // Simulate a 3-second processing time
-    });
   },
   
   saveToHistory: async (apiData: Omit<ApiHistory, "id" | "createdAt">): Promise<ApiHistory> => {

@@ -7,6 +7,7 @@ import { ApiResponse } from "@/services/apiService";
 import { Check, Clipboard, Code, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ApiResultProps {
   result: ApiResponse;
@@ -28,23 +29,33 @@ export const ApiResult = ({ result, onClear }: ApiResultProps) => {
     }
   };
 
-  const handleCopyData = () => {
-    if (result.data) {
-      navigator.clipboard.writeText(JSON.stringify(result.data, null, 2));
-      toast.success("API data copied to clipboard");
+  const handleCopyDocs = () => {
+    if (result.documentation) {
+      navigator.clipboard.writeText(result.documentation);
+      toast.success("Documentation copied to clipboard");
     }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <Card className="border-0 shadow-lg overflow-hidden">
+    <motion.div 
+      className="space-y-6" 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="border-0 shadow-lg overflow-hidden bg-white/90 dark:bg-black/60 backdrop-blur-md border border-purple-100 dark:border-purple-900/30">
         <CardHeader className="bg-primary/5 border-b border-border">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl">API Generated Successfully</CardTitle>
+              <CardTitle className="text-xl bg-gradient-to-r from-purple-700 to-violet-500 bg-clip-text text-transparent dark:from-purple-400 dark:to-violet-300">API Generated Successfully</CardTitle>
               <CardDescription>Your website has been converted to an API</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClear}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClear}
+              className="hover:bg-purple-100 dark:hover:bg-purple-900/30"
+            >
               New Conversion
             </Button>
           </div>
@@ -54,7 +65,7 @@ export const ApiResult = ({ result, onClear }: ApiResultProps) => {
             <div className="space-y-1">
               <div className="text-sm font-medium text-muted-foreground">API Endpoint</div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-muted p-3 rounded-md font-mono text-sm truncate">
+                <div className="flex-1 bg-muted p-3 rounded-md font-mono text-sm truncate overflow-x-auto">
                   {result.apiEndpoint}
                 </div>
                 <Button 
@@ -71,62 +82,17 @@ export const ApiResult = ({ result, onClear }: ApiResultProps) => {
               </div>
             </div>
             
-            <Tabs defaultValue="preview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="preview">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Preview
-                </TabsTrigger>
+            <Tabs defaultValue="docs" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="docs">
                   <Code className="h-4 w-4 mr-2" />
                   Documentation
                 </TabsTrigger>
                 <TabsTrigger value="raw">
-                  <Code className="h-4 w-4 mr-2" />
-                  Raw JSON
+                  <FileText className="h-4 w-4 mr-2" />
+                  Raw Docs
                 </TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="preview" className="mt-4 space-y-4">
-                <div className="space-y-4 p-4 border rounded-md">
-                  <h3 className="font-semibold text-lg">{result.data?.title}</h3>
-                  <p className="text-muted-foreground">{result.data?.description}</p>
-                  
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Meta Information</h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="font-medium">Author:</div>
-                      <div>{result.data?.meta?.author}</div>
-                      
-                      <div className="font-medium">Keywords:</div>
-                      <div>{result.data?.meta?.keywords?.join(", ")}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Content Sections</h4>
-                    {result.data?.content?.sections?.map((section: any, index: number) => (
-                      <div key={index} className="border-l-2 border-primary/30 pl-3 py-1">
-                        <h5 className="font-medium">{section.heading}</h5>
-                        {section.paragraphs && (
-                          <div className="space-y-1 mt-1 text-sm text-muted-foreground">
-                            {section.paragraphs.map((paragraph: string, i: number) => (
-                              <p key={i}>{paragraph}</p>
-                            ))}
-                          </div>
-                        )}
-                        {section.items && (
-                          <ul className="list-disc list-inside mt-1 text-sm text-muted-foreground">
-                            {section.items.map((item: string, i: number) => (
-                              <li key={i}>{item}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </TabsContent>
               
               <TabsContent value="docs" className="mt-4">
                 <div className="border rounded-md p-4 bg-muted/30">
@@ -148,14 +114,14 @@ export const ApiResult = ({ result, onClear }: ApiResultProps) => {
               
               <TabsContent value="raw" className="mt-4">
                 <div className="relative">
-                  <pre className="language-json rounded-md bg-muted/30 p-4 overflow-x-auto text-sm">
-                    {JSON.stringify(result.data, null, 2)}
+                  <pre className="language-markdown rounded-md bg-muted/30 p-4 overflow-x-auto text-sm">
+                    {result.documentation || "No documentation available"}
                   </pre>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="absolute top-2 right-2"
-                    onClick={handleCopyData}
+                    className="absolute top-2 right-2 bg-white/80 dark:bg-black/50 backdrop-blur-sm"
+                    onClick={handleCopyDocs}
                   >
                     <Clipboard className="h-3 w-3 mr-2" />
                     Copy
@@ -166,6 +132,6 @@ export const ApiResult = ({ result, onClear }: ApiResultProps) => {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 };
