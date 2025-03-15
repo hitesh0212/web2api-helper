@@ -23,14 +23,15 @@ export interface ApiResponse {
 export const apiService = {
   generateApi: async (url: string): Promise<ApiResponse> => {
     try {
-      const backendUrl = "https://web2api-1.onrender.com";
+      const backendUrl = "https://web2api-uo3f.onrender.com";
       
-      const response = await fetch(`${backendUrl}`, {
-        method: "POST",
+      const response = await fetch(`${backendUrl}/generate-api/?url=${encodeURIComponent(url)}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url }),
+        mode:"cors",
+        credentials:"include",
       });
       
       if (!response.ok) {
