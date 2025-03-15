@@ -138,13 +138,21 @@ curl -X GET "https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}" \\
   
   saveToHistory: async (apiData: Omit<ApiHistory, "id" | "createdAt">): Promise<ApiHistory> => {
     try {
+      // Get the current user
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        throw new Error("User is not authenticated");
+      }
+      
       const { data, error } = await supabase
         .from('api_history')
         .insert({
           url: apiData.url,
           api_endpoint: apiData.apiEndpoint,
           status: apiData.status,
-          error: apiData.error
+          error: apiData.error,
+          user_id: session.user.id // Include the user_id from the session
         })
         .select()
         .single();
@@ -183,9 +191,17 @@ curl -X GET "https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}" \\
   
   getHistory: async (): Promise<ApiHistory[]> => {
     try {
+      // Get the current user
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        return []; // Return empty array if user is not authenticated
+      }
+      
       const { data, error } = await supabase
         .from('api_history')
         .select('*')
+        .eq('user_id', session.user.id) // Filter by the current user's ID
         .order('created_at', { ascending: false });
       
       if (error) throw error;

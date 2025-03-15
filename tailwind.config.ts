@@ -108,6 +108,32 @@ export default {
           from: { transform: "rotate(0deg)" },
           to: { transform: "rotate(360deg)" },
         },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "float-vertical": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-15px)" },
+        },
+        "float-horizontal": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(15px)" },
+        },
+        "bounce-slight": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { 
+            opacity: "1",
+            boxShadow: "0 0 5px 0px rgba(168, 85, 247, 0.4)"
+          },
+          "50%": { 
+            opacity: "0.8",
+            boxShadow: "0 0 20px 5px rgba(168, 85, 247, 0.7)"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -121,6 +147,11 @@ export default {
         "slide-out-right": "slide-out-right 0.5s ease-out",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         spin: "spin 1s linear infinite",
+        "spin-slow": "spin-slow 8s linear infinite",
+        "float-vertical": "float-vertical 6s ease-in-out infinite",
+        "float-horizontal": "float-horizontal 6s ease-in-out infinite",
+        "bounce-slight": "bounce-slight 2s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
       },
       boxShadow: {
         glass: "0 4px 30px rgba(0, 0, 0, 0.1)",

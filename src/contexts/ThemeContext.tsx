@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 type ThemeContextType = {
@@ -19,13 +20,35 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
+    // Apply theme with a smooth transition
+    const root = document.documentElement;
+    
+    // Add transition class for smooth theme changes
+    root.classList.add('transition-colors', 'duration-300');
+    
     if (isDarkMode) {
-      document.documentElement.classList.add("dark");
+      root.classList.add("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove("dark");
+      root.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
+    
+    // Optional: Add some animation to body elements when theme changes
+    const bodyElements = document.querySelectorAll('.theme-transition-item');
+    bodyElements.forEach((el, index) => {
+      // Stagger the animations
+      setTimeout(() => {
+        (el as HTMLElement).style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+        (el as HTMLElement).style.transform = 'translateY(10px)';
+        (el as HTMLElement).style.opacity = '0';
+        
+        setTimeout(() => {
+          (el as HTMLElement).style.transform = 'translateY(0)';
+          (el as HTMLElement).style.opacity = '1';
+        }, 50);
+      }, index * 50);
+    });
   }, [isDarkMode]);
 
   const toggleTheme = () => {
