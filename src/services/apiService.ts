@@ -31,7 +31,6 @@ export const apiService = {
           "Content-Type": "application/json",
         },
         mode:"cors",
-        credentials:"include",
       });
       
       if (!response.ok) {
