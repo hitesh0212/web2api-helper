@@ -1,4 +1,5 @@
 
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 // Define types for our API structure
@@ -19,7 +20,7 @@ export interface ApiResponse {
   error?: string;
 }
 
-// Mock service that would connect to our Python Flask backend
+// Service that connects to Supabase and our Python Flask backend
 export const apiService = {
   generateApi: async (url: string): Promise<ApiResponse> => {
     // In a real app, this would call our Flask backend
@@ -136,44 +137,96 @@ curl -X GET "https://api.web2api.com/v1/${url.replace(/[^a-zA-Z0-9]/g, "")}" \\
   },
   
   saveToHistory: async (apiData: Omit<ApiHistory, "id" | "createdAt">): Promise<ApiHistory> => {
-    // In a real app, this would save to MongoDB
-    const historyItem: ApiHistory = {
-      ...apiData,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-    };
-    
-    // Store in localStorage for demo purposes
-    const existingHistory = JSON.parse(localStorage.getItem("apiHistory") || "[]") as ApiHistory[];
-    const updatedHistory = [historyItem, ...existingHistory];
-    localStorage.setItem("apiHistory", JSON.stringify(updatedHistory));
-    
-    toast.success("API saved to history");
-    return historyItem;
+    try {
+      const { data, error } = await supabase
+        .from('api_history')
+        .insert({
+          url: apiData.url,
+          api_endpoint: apiData.apiEndpoint,
+          status: apiData.status,
+          error: apiData.error
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      const historyItem: ApiHistory = {
+        id: data.id,
+        url: data.url,
+        apiEndpoint: data.api_endpoint,
+        status: data.status as "success" | "error" | "pending",
+        createdAt: new Date(data.created_at),
+        error: data.error
+      };
+      
+      toast.success("API saved to history");
+      return historyItem;
+    } catch (error: any) {
+      console.error('Error saving to history:', error);
+      toast.error("Failed to save to history");
+      
+      // Fallback to localStorage if Supabase fails
+      const historyItem: ApiHistory = {
+        ...apiData,
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+      };
+      
+      const existingHistory = JSON.parse(localStorage.getItem("apiHistory") || "[]") as ApiHistory[];
+      const updatedHistory = [historyItem, ...existingHistory];
+      localStorage.setItem("apiHistory", JSON.stringify(updatedHistory));
+      
+      return historyItem;
+    }
   },
   
   getHistory: async (): Promise<ApiHistory[]> => {
-    // In a real app, this would fetch from MongoDB
-    return new Promise((resolve) => {
-      // Simulate API call delay
-      setTimeout(() => {
+    try {
+      const { data, error } = await supabase
+        .from('api_history')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return (data || []).map(item => ({
+        id: item.id,
+        url: item.url,
+        apiEndpoint: item.api_endpoint,
+        status: item.status as "success" | "error" | "pending",
+        createdAt: new Date(item.created_at),
+        error: item.error
+      }));
+    } catch (error) {
+      console.error('Error fetching history:', error);
+      
+      // Fallback to localStorage if Supabase fails
+      return new Promise((resolve) => {
         const history = JSON.parse(localStorage.getItem("apiHistory") || "[]") as ApiHistory[];
         resolve(history);
-      }, 500);
-    });
+      });
+    }
   },
   
   deleteFromHistory: async (id: string): Promise<void> => {
-    // In a real app, this would delete from MongoDB
-    return new Promise((resolve) => {
-      // Simulate API call delay
-      setTimeout(() => {
-        const existingHistory = JSON.parse(localStorage.getItem("apiHistory") || "[]") as ApiHistory[];
-        const updatedHistory = existingHistory.filter(item => item.id !== id);
-        localStorage.setItem("apiHistory", JSON.stringify(updatedHistory));
-        toast.success("API removed from history");
-        resolve();
-      }, 300);
-    });
+    try {
+      const { error } = await supabase
+        .from('api_history')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success("API removed from history");
+    } catch (error) {
+      console.error('Error deleting from history:', error);
+      toast.error("Failed to remove from history");
+      
+      // Fallback to localStorage if Supabase fails
+      const existingHistory = JSON.parse(localStorage.getItem("apiHistory") || "[]") as ApiHistory[];
+      const updatedHistory = existingHistory.filter(item => item.id !== id);
+      localStorage.setItem("apiHistory", JSON.stringify(updatedHistory));
+    }
   },
 };

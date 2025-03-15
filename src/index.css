@@ -14,16 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     
-    --primary: 221.2 83% 53.3%;
+    --primary: 262 83% 58%; /* Purple */
     --primary-foreground: 210 40% 98%;
     
-    --secondary: 210 40% 96.1%;
+    --secondary: 262 100% 96%; /* Light purple for secondary */
     --secondary-foreground: 222.2 47.4% 11.2%;
     
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     
-    --accent: 210 40% 96.1%;
+    --accent: 262 100% 96%; /* Light purple for accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     
     --destructive: 0 84.2% 60.2%;
@@ -31,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83% 53.3%;
+    --ring: 262 83% 58%; /* Purple for focus rings */
     
     --radius: 0.75rem;
   }
@@ -46,16 +46,16 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
     
-    --primary: 217.2 91.2% 59.8%;
+    --primary: 263 70% 70%; /* Lighter purple for dark mode */
     --primary-foreground: 222.2 47.4% 11.2%;
     
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 263 50% 22%; /* Darker purple for dark mode secondary */
     --secondary-foreground: 210 40% 98%;
     
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
     
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 263 50% 22%; /* Dark purple for accent */
     --accent-foreground: 210 40% 98%;
     
     --destructive: 0 62.8% 30.6%;
@@ -63,7 +63,7 @@
     
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 263 70% 70%; /* Lighter purple for dark mode focus rings */
   }
 }
 
@@ -88,13 +88,14 @@
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-violet-400;
   }
 
   .text-gradient-purple {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-400;
   }
   
+  /* Animation utilities */
   .animate-delay-100 {
     animation-delay: 100ms;
   }
@@ -114,6 +115,68 @@
   .animate-delay-700 {
     animation-delay: 700ms;
   }
+
+  /* Floating animation */
+  .floating {
+    animation: floating 3s ease-in-out infinite;
+  }
+
+  @keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  /* Pulse glow animation */
+  .pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      opacity: 1;
+      box-shadow: 0 0 15px 0px rgba(139, 92, 246, 0.5); 
+    }
+    50% { 
+      opacity: 0.85;
+      box-shadow: 0 0 25px 5px rgba(139, 92, 246, 0.8); 
+    }
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide in animation */
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s ease-out forwards;
+  }
+
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* Box shadow for glass effect */
+.shadow-glass {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styles for the 3D button effect */
+.btn-3d {
+  @apply relative overflow-hidden transition-all duration-200 active:translate-y-1;
+  box-shadow: 0 4px 0 0 theme('colors.purple.800');
+}
+
+.btn-3d:active {
+  box-shadow: 0 0 0 0 theme('colors.purple.800');
 }
 
 #root {

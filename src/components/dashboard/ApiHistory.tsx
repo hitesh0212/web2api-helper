@@ -5,14 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiHistory as ApiHistoryType, apiService } from "@/services/apiService";
 import { Clock, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const ApiHistory = () => {
   const [history, setHistory] = useState<ApiHistoryType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   useEffect(() => {
-    loadHistory();
-  }, []);
+    if (user) {
+      loadHistory();
+    }
+  }, [user]);
 
   const loadHistory = async () => {
     setIsLoading(true);

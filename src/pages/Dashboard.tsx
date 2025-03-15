@@ -9,20 +9,18 @@ import { ApiResult } from "@/components/dashboard/ApiResult";
 import { ApiHistory } from "@/components/dashboard/ApiHistory";
 import { LoadingState } from "@/components/dashboard/LoadingState";
 import { ApiResponse } from "@/services/apiService";
+import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Dashboard = () => {
   const [apiResult, setApiResult] = useState<ApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
-  const handleLogout = () => {
-    // In a real app, this would clear the auth token
-    toast({
-      title: "Logged out",
-      description: "You have been logged out.",
-    });
-    navigate("/");
+  const handleLogout = async () => {
+    await signOut();
   };
 
   const handleApiGenerated = (response: ApiResponse) => {
@@ -40,14 +38,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/10 dark:to-background">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50/50 to-white dark:from-purple-950/10 dark:to-background">
       {/* Header */}
       <header className="glass-effect backdrop-blur-md bg-white/70 dark:bg-black/70 border-b border-border sticky top-0 z-50">
         <div className="container max-w-7xl mx-auto py-4 px-4 md:px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="relative w-8 h-8 overflow-hidden">
-              <div className="w-4 h-8 bg-blue-500 rounded-l-full absolute left-0"></div>
-              <div className="w-4 h-8 bg-blue-600 rounded-r-full absolute right-0"></div>
+              <div className="w-4 h-8 bg-purple-500 rounded-l-full absolute left-0"></div>
+              <div className="w-4 h-8 bg-purple-600 rounded-r-full absolute right-0"></div>
             </div>
             <span className="text-xl font-bold tracking-tight">
               Web<span className="text-primary">2</span>Api
@@ -55,11 +53,15 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            <ThemeToggle />
+            
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <User className="h-4 w-4 text-primary" />
               </div>
-              <span className="text-sm font-medium hidden md:inline-block">John Doe</span>
+              <span className="text-sm font-medium hidden md:inline-block">
+                {user?.email?.split('@')[0] || 'User'}
+              </span>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
               <LogOut className="h-4 w-4" />

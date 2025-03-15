@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { apiService, ApiResponse } from "@/services/apiService";
-import { Link2, Loader2 } from "lucide-react";
+import { Link2, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ApiFormProps {
   onApiGenerated: (response: ApiResponse) => void;
@@ -15,6 +16,7 @@ export const ApiForm = ({ onApiGenerated }: ApiFormProps) => {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +100,7 @@ export const ApiForm = ({ onApiGenerated }: ApiFormProps) => {
             </div>
             <Button 
               type="submit" 
-              className="h-12 px-8"
+              className="h-12 px-8 btn-3d bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 group"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -107,7 +109,10 @@ export const ApiForm = ({ onApiGenerated }: ApiFormProps) => {
                   Generating API...
                 </>
               ) : (
-                "Generate API"
+                <>
+                  <Sparkles className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+                  Generate API
+                </>
               )}
             </Button>
           </div>
